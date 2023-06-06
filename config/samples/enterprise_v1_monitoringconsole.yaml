@@ -1,0 +1,12 @@
+apiVersion: enterprise.splunk.poc/v1
+kind: MonitoringConsole
+metadata:
+  labels:
+    app.kubernetes.io/name: monitoringconsole
+    app.kubernetes.io/instance: monitoringconsole-sample
+    app.kubernetes.io/part-of: splunk-upgrade-poc
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: splunk-upgrade-poc
+  name: monitoringconsole-sample
+spec:
+  # TODO(user): Add fields here

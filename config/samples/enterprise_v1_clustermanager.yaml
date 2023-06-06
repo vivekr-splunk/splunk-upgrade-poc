@@ -1,0 +1,12 @@
+apiVersion: enterprise.splunk.poc/v1
+kind: ClusterManager
+metadata:
+  labels:
+    app.kubernetes.io/name: clustermanager
+    app.kubernetes.io/instance: clustermanager-sample
+    app.kubernetes.io/part-of: splunk-upgrade-poc
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: splunk-upgrade-poc
+  name: clustermanager-sample
+spec:
+  # TODO(user): Add fields here

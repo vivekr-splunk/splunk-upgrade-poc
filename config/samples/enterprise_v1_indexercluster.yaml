@@ -1,0 +1,12 @@
+apiVersion: enterprise.splunk.poc/v1
+kind: IndexerCluster
+metadata:
+  labels:
+    app.kubernetes.io/name: indexercluster
+    app.kubernetes.io/instance: indexercluster-sample
+    app.kubernetes.io/part-of: splunk-upgrade-poc
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: splunk-upgrade-poc
+  name: indexercluster-sample
+spec:
+  # TODO(user): Add fields here

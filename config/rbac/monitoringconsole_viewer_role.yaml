@@ -1,0 +1,27 @@
+# permissions for end users to view monitoringconsoles.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: monitoringconsole-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: splunk-upgrade-poc
+    app.kubernetes.io/part-of: splunk-upgrade-poc
+    app.kubernetes.io/managed-by: kustomize
+  name: monitoringconsole-viewer-role
+rules:
+- apiGroups:
+  - enterprise.splunk.poc
+  resources:
+  - monitoringconsoles
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - enterprise.splunk.poc
+  resources:
+  - monitoringconsoles/status
+  verbs:
+  - get

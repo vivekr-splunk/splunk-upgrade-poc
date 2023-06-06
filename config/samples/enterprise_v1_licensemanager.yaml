@@ -1,0 +1,12 @@
+apiVersion: enterprise.splunk.poc/v1
+kind: LicenseManager
+metadata:
+  labels:
+    app.kubernetes.io/name: licensemanager
+    app.kubernetes.io/instance: licensemanager-sample
+    app.kubernetes.io/part-of: splunk-upgrade-poc
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: splunk-upgrade-poc
+  name: licensemanager-sample
+spec:
+  # TODO(user): Add fields here

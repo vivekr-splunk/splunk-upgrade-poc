@@ -80,6 +80,9 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	// Upgrade Scenario ?
 	// check if LicenseManager has completed Upgrade
 	// update ClusterManager and also add Ownership Reference
+	if upgradeScenarioForClusterManager(ctx, r.Client, instance) {
+		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	}
 
 	return ctrl.Result{}, nil
 }

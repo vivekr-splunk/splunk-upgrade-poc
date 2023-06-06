@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+
 	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -115,11 +116,11 @@ func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectM
 	return nil
 }
 
-func upgradeScenrioForLicenseManager(ctx context.Context, c client.Client, request enterprisev1.LicenseManager) bool {
+func upgradeScenarioForLicenseManager(ctx context.Context, c client.Client, request *enterprisev1.LicenseManager) bool {
 	return false
 }
 
-func upgradeScenrioForClusterManager(ctx context.Context, c client.Client, request enterprisev1.ClusterManager) bool {
+func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, request *enterprisev1.ClusterManager) bool {
 	// read license manager reference
 	licenseManagerRef := request.Spec.LicenseManagerRef
 	namespacedName := types.NamespacedName{Namespace: licenseManagerRef.Namespace, Name: licenseManagerRef.Name}
@@ -137,18 +138,18 @@ func upgradeScenrioForClusterManager(ctx context.Context, c client.Client, reque
 	return false
 }
 
-func upgradeScenrioForMonitoringConsole(ctx context.Context, c client.Client, request enterprisev1.MonitoringConsole) bool {
+func upgradeScenarioForMonitoringConsole(ctx context.Context, c client.Client, request *enterprisev1.MonitoringConsole) bool {
 	return false
 }
 
-func upgradeScenrioForIndexerCluster(ctx context.Context, c client.Client, request enterprisev1.IndexerCluster) bool {
+func upgradeScenarioForIndexerCluster(ctx context.Context, c client.Client, request *enterprisev1.IndexerCluster) bool {
 	return false
 }
 
-func upgradeScenrioForSearchHeadCluster(ctx context.Context, c client.Client, request enterprisev1.SearchHeadCluster) bool {
+func upgradeScenarioForSearchHeadCluster(ctx context.Context, c client.Client, request *enterprisev1.SearchHeadCluster) bool {
 	return false
 }
 
-func upgradeScenrioForStandalone(ctx context.Context, c client.Client, request enterprisev1.Standalone) bool {
+func upgradeScenarioForStandalone(ctx context.Context, c client.Client, request *enterprisev1.Standalone) bool {
 	return false
 }

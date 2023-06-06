@@ -10,3 +10,7 @@ metadata:
   name: monitoringconsole-sample
 spec:
   image: registry.k8s.io/nginx-slim:0.8
+  clusterManagerRef:
+    name: clustermanager-sample
+  licenseManagerRef:
+    name: licensemanager-sample

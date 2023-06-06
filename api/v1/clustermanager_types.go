@@ -31,6 +31,7 @@ type ClusterManagerSpec struct {
 
 	// Foo is an example field of ClusterManager. Edit clustermanager_types.go to remove/update
 	Spec `json:",inline"`
+
 	// LicenseManagerRef refers to a Splunk Enterprise Liense manager ref
 	LicenseManagerRef corev1.ObjectReference `json:"licenseManagerRef"`
 }

@@ -11,6 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 /*
@@ -121,20 +122,28 @@ func upgradeScenarioForLicenseManager(ctx context.Context, c client.Client, requ
 }
 
 func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, request *enterprisev1.ClusterManager) bool {
+
+	reqLogger := log.FromContext(ctx)
 	// read license manager reference
+
 	licenseManagerRef := request.Spec.LicenseManagerRef
 	namespacedName := types.NamespacedName{Namespace: licenseManagerRef.Namespace, Name: licenseManagerRef.Name}
+
 	// create new object
 	licenseManager := &enterprisev1.LicenseManager{}
+
 	// get the license manager referred in cluster manager
 	err := c.Get(ctx, namespacedName, licenseManager)
 	if err != nil {
+		reqLogger.Error(err, "unable to find license manager", "name", licenseManagerRef.Name, "namespace", licenseManagerRef.Namespace)
 		return false
 	}
+
 	if request.Status.Image != request.Spec.Image && licenseManager.Status.Image == request.Spec.Image && licenseManager.Status.Phase == "Ready" {
-		// update
+		// update possible
 		return true
 	}
+
 	return false
 }
 

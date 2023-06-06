@@ -31,8 +31,12 @@ type IndexerClusterSpec struct {
 
 	// Foo is an example field of IndexerCluster. Edit indexercluster_types.go to remove/update
 	Spec `json:",inline"`
+
 	// ClusterManagerRef refers to a Splunk Enterprise indexer cluster managed by the operator within Kubernetes
 	ClusterManagerRef corev1.ObjectReference `json:"clusterManagerRef"`
+
+	// LicenseManagerRef refers to a Splunk Enterprise license manager that is used
+	LicenseManagerRef corev1.ObjectReference `json:"licenseManagerRef"`
 }
 
 // IndexerClusterStatus defines the observed state of IndexerCluster

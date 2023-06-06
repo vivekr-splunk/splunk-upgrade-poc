@@ -31,8 +31,12 @@ type MonitoringConsoleSpec struct {
 
 	// Foo is an example field of MonitoringConsole. Edit monitoringconsole_types.go to remove/update
 	Spec `json:",inline"`
+
 	// ClusterManagerRef refers to a Splunk Enterprise indexer cluster managed by the operator within Kubernetes
 	ClusterManagerRef corev1.ObjectReference `json:"clusterManagerRef"`
+
+	// LicenseManagerRef refers to a Splunk Enterprise license manager that is used
+	LicenseManagerRef corev1.ObjectReference `json:"licenseManagerRef"`
 }
 
 // MonitoringConsoleStatus defines the observed state of MonitoringConsole

@@ -19,12 +19,12 @@ package controllers
 import (
 	"context"
 
+	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 )
 
 // MonitoringConsoleReconciler reconciles a MonitoringConsole object

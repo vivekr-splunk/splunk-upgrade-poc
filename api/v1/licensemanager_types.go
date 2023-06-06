@@ -36,6 +36,9 @@ type LicenseManagerSpec struct {
 type LicenseManagerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	// current phase of the license manager
+	Phase Phase  `json:"phase"`
+	Image string `image:"image"`
 }
 
 //+kubebuilder:object:root=true

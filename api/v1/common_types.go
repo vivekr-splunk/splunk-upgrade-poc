@@ -4,6 +4,33 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+// Phase is used to represent the current phase of a custom resource
+// +kubebuilder:validation:Enum=Pending;Ready;Updating;ScalingUp;ScalingDown;Terminating;Error
+type Phase string
+
+const (
+	// PhasePending means a custom resource has just been created and is not yet ready
+	PhasePending Phase = "Pending"
+
+	// PhaseReady means a custom resource is ready and up to date
+	PhaseReady Phase = "Ready"
+
+	// PhaseUpdating means a custom resource is in the process of updating to a new desired state (spec)
+	PhaseUpdating Phase = "Updating"
+
+	// PhaseScalingUp means a custom resource is in the process of scaling up
+	PhaseScalingUp Phase = "ScalingUp"
+
+	// PhaseScalingDown means a custom resource is in the process of scaling down
+	PhaseScalingDown Phase = "ScalingDown"
+
+	// PhaseTerminating means a custom resource is in the process of being removed
+	PhaseTerminating Phase = "Terminating"
+
+	// PhaseError means an error occured with custom resource management
+	PhaseError Phase = "Error"
+)
+
 // Spec defines a subset of the desired state of parameters that are common across all CRD types
 type Spec struct {
 	// Image to use for Splunk pod containers (overrides RELATED_IMAGE_SPLUNK_ENTERPRISE environment variables)

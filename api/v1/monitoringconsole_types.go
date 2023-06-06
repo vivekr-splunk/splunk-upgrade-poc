@@ -39,6 +39,8 @@ type MonitoringConsoleSpec struct {
 type MonitoringConsoleStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Phase Phase  `json:"phase"`
+	Image string `image:"image"`
 }
 
 //+kubebuilder:object:root=true

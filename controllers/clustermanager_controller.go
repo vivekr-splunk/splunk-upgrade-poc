@@ -19,12 +19,12 @@ package controllers
 import (
 	"context"
 
+	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 )
 
 // ClusterManagerReconciler reconciles a ClusterManager object
@@ -77,6 +77,9 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
 
 	// TODO(user): your logic here
+	// Upgrade Scenario ?
+	// check if LicenseManager has completed Upgrade
+	// update ClusterManager and also add Ownership Reference
 
 	return ctrl.Result{}, nil
 }

@@ -75,7 +75,9 @@ func (r *SearchHeadClusterReconciler) Reconcile(ctx context.Context, req ctrl.Re
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
-
+	if upgradeScenarioForSearchHeadCluster(ctx, r.Client, instance) {
+		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	}
 	return ctrl.Result{}, nil
 }
 

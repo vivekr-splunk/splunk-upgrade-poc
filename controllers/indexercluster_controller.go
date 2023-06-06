@@ -75,7 +75,9 @@ func (r *IndexerClusterReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
-
+	if upgradeScenarioForIndexerCluster(ctx, r.Client, instance) {
+		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	}
 	return ctrl.Result{}, nil
 }
 

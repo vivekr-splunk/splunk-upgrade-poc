@@ -9,4 +9,4 @@ metadata:
     app.kubernetes.io/created-by: splunk-upgrade-poc
   name: monitoringconsole-sample
 spec:
-  # TODO(user): Add fields here
+  image: registry.k8s.io/nginx-slim:0.8

@@ -75,7 +75,9 @@ func (r *LicenseManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
-
+	if len(instance.Spec.Image) > 3 {
+		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	}
 	return ctrl.Result{}, nil
 }
 

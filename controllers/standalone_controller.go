@@ -75,7 +75,9 @@ func (r *StandaloneReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
-
+	if upgradeScenarioForStandalone(ctx, r.Client, instance) {
+		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	}
 	return ctrl.Result{}, nil
 }
 

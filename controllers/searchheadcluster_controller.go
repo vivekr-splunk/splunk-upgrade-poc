@@ -23,7 +23,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 )
 
@@ -59,9 +59,22 @@ type SearchHeadClusterReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *SearchHeadClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	reqLogger := log.FromContext(ctx)
+	reqLogger = reqLogger.WithValues("searchheadcluster", req.NamespacedName)
 
-	// TODO(user): your logic here
+	// Fetch the ClusterManager
+	instance := &enterprisev1.SearchHeadCluster{}
+	err := r.Get(ctx, req.NamespacedName, instance)
+	if err != nil {
+		if k8serrors.IsNotFound(err) {
+			// Request object not found, could have been deleted after
+			// reconcile request.  Owned objects are automatically
+			// garbage collected. For additional cleanup logic use
+			// finalizers.  Return and don't requeue
+			return ctrl.Result{}, nil
+		}
+	}
+	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
 
 	return ctrl.Result{}, nil
 }

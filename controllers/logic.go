@@ -72,6 +72,100 @@ spec:
 	      requests:
 	        storage: 1Gi
 */
+func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.LicenseManager) error {
+	replicas := int32(3)
+	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
+	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
+	statefulSet := appsv1.StatefulSet{}
+	err := c.Get(ctx, namespacedName, &statefulSet)
+	if err != nil && k8serrors.IsNotFound(err) {
+		// create new statefulset
+		statefulSet.Name = name
+		statefulSet.Namespace = meta.GetNamespace()
+		statefulSet.Spec.Replicas = &replicas
+		statefulSet.Spec.Template.Spec.Containers = []corev1.Container{
+			{
+				Name:  "nginx",
+				Image: image,
+				Ports: []corev1.ContainerPort{
+					{
+						ContainerPort: 80,
+						Name:          "web",
+					},
+				},
+			},
+		}
+		err = c.Create(ctx, &statefulSet)
+		if err != nil {
+			return err
+		}
+
+	}
+	// else update the statefulset image
+	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
+		return fmt.Errorf("image tag is same")
+	}
+	if statefulSet.Status.AvailableReplicas != 3 {
+		return fmt.Errorf("replicas not 3")
+	}
+
+	statefulSet.Spec.Template.Spec.Containers[0].Image = image
+	err = c.Update(ctx, &statefulSet)
+	if err != nil {
+		return err
+	}
+	request.Status.Image = image
+	request.Status.Phase = "Ready"
+
+	return nil
+}
+func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.ClusterManager) error {
+	replicas := int32(3)
+	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
+	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
+	statefulSet := appsv1.StatefulSet{}
+	err := c.Get(ctx, namespacedName, &statefulSet)
+	if err != nil && k8serrors.IsNotFound(err) {
+		// create new statefulset
+		statefulSet.Name = name
+		statefulSet.Namespace = meta.GetNamespace()
+		statefulSet.Spec.Replicas = &replicas
+		statefulSet.Spec.Template.Spec.Containers = []corev1.Container{
+			{
+				Name:  "nginx",
+				Image: image,
+				Ports: []corev1.ContainerPort{
+					{
+						ContainerPort: 80,
+						Name:          "web",
+					},
+				},
+			},
+		}
+		err = c.Create(ctx, &statefulSet)
+		if err != nil {
+			return err
+		}
+
+	}
+	// else update the statefulset image
+	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
+		return fmt.Errorf("image tag is same")
+	}
+	if statefulSet.Status.AvailableReplicas != 3 {
+		return fmt.Errorf("replicas not 3")
+	}
+
+	statefulSet.Spec.Template.Spec.Containers[0].Image = image
+	err = c.Update(ctx, &statefulSet)
+	if err != nil {
+		return err
+	}
+	request.Status.Image = image
+	request.Status.Phase = "Ready"
+
+	return nil
+}
 func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string) error {
 	replicas := int32(3)
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
@@ -114,6 +208,7 @@ func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectM
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -138,14 +233,13 @@ func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, requ
 		reqLogger.Error(err, "unable to find license manager", "name", licenseManagerRef.Name, "namespace", licenseManagerRef.Namespace)
 		return false
 	}
-	fmt.Println(request.Status.Image)
-	fmt.Println(request.Spec.Image)
-	fmt.Println(licenseManager.Status.Image)
-	fmt.Println(licenseManager.Status.Phase)
 	if request.Status.Image != request.Spec.Image && licenseManager.Status.Image == request.Spec.Image && licenseManager.Status.Phase == "Ready" {
 		// update possible
 		fmt.Println("1")
 		return true
+	}
+	if request.Status.Image != request.Spec.Image {
+		request.Status.Phase = "Pending"
 	}
 	fmt.Println("0")
 

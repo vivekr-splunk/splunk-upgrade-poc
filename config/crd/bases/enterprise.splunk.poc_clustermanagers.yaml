@@ -1651,13 +1651,8 @@ spec:
                   type: object
                 type: array
             required:
-            - affinity
             - image
-            - imagePullPolicy
             - licenseManagerRef
-            - resources
-            - schedulerName
-            - serviceTemplate
             type: object
           status:
             description: ClusterManagerStatus defines the observed state of ClusterManager

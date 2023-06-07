@@ -1689,14 +1689,9 @@ spec:
                   type: object
                 type: array
             required:
-            - affinity
             - clusterManagerRef
             - image
-            - imagePullPolicy
             - licenseManagerRef
-            - resources
-            - schedulerName
-            - serviceTemplate
             type: object
           status:
             description: SearchHeadClusterStatus defines the observed state of SearchHeadCluster

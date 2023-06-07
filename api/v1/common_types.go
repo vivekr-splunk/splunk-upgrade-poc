@@ -38,23 +38,30 @@ type Spec struct {
 
 	// Sets pull policy for all images (either “Always” or the default: “IfNotPresent”)
 	// +kubebuilder:validation:Enum=Always;IfNotPresent
-	ImagePullPolicy string `json:"imagePullPolicy"`
+	// +optional
+	ImagePullPolicy string `json:"imagePullPolicy,omitempty"`
 
 	// Name of Scheduler to use for pod placement (defaults to “default-scheduler”)
-	SchedulerName string `json:"schedulerName"`
+	// +optional
+	SchedulerName string `json:"schedulerName,omitempty"`
 
 	// Kubernetes Affinity rules that control how pods are assigned to particular nodes.
-	Affinity corev1.Affinity `json:"affinity"`
+	// +optional
+	Affinity corev1.Affinity `json:"affinity,omitempty"`
 
 	// Pod's tolerations for Kubernetes node's taint
+	// +optional
 	Tolerations []corev1.Toleration `json:"tolerations,omitempty"`
 
 	// resource requirements for the pod containers
-	Resources corev1.ResourceRequirements `json:"resources"`
+	// +optional
+	Resources corev1.ResourceRequirements `json:"resources,omitempty"`
 
 	// ServiceTemplate is a template used to create Kubernetes services
-	ServiceTemplate corev1.Service `json:"serviceTemplate"`
+	// +optional
+	ServiceTemplate corev1.Service `json:"serviceTemplate,omitempty"`
 
 	// TopologySpreadConstraint https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+	// +optional
 	TopologySpreadConstraints []corev1.TopologySpreadConstraint `json:"topologySpreadConstraints,omitempty"`
 }

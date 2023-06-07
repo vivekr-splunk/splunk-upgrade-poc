@@ -127,7 +127,7 @@ func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, requ
 	// read license manager reference
 
 	licenseManagerRef := request.Spec.LicenseManagerRef
-	namespacedName := types.NamespacedName{Namespace: licenseManagerRef.Namespace, Name: licenseManagerRef.Name}
+	namespacedName := types.NamespacedName{Namespace: request.GetNamespace(), Name: licenseManagerRef.Name}
 
 	// create new object
 	licenseManager := &enterprisev1.LicenseManager{}
@@ -138,11 +138,16 @@ func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, requ
 		reqLogger.Error(err, "unable to find license manager", "name", licenseManagerRef.Name, "namespace", licenseManagerRef.Namespace)
 		return false
 	}
-
+	fmt.Println(request.Status.Image)
+	fmt.Println(request.Spec.Image)
+	fmt.Println(licenseManager.Status.Image)
+	fmt.Println(licenseManager.Status.Phase)
 	if request.Status.Image != request.Spec.Image && licenseManager.Status.Image == request.Spec.Image && licenseManager.Status.Phase == "Ready" {
 		// update possible
+		fmt.Println("1")
 		return true
 	}
+	fmt.Println("0")
 
 	return false
 }

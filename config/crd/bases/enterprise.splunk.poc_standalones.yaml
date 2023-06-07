@@ -1613,12 +1613,7 @@ spec:
                   type: object
                 type: array
             required:
-            - affinity
             - image
-            - imagePullPolicy
-            - resources
-            - schedulerName
-            - serviceTemplate
             type: object
           status:
             description: StandaloneStatus defines the observed state of Standalone

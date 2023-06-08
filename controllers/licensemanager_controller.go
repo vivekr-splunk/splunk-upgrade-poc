@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -76,7 +77,10 @@ func (r *LicenseManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
 	if len(instance.Spec.Image) > 3 {
-		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+		err = updateLMStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
+		if err != nil {
+			fmt.Println("LM Controller error", err)
+		}
 	}
 	return ctrl.Result{}, nil
 }

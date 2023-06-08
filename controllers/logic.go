@@ -114,8 +114,13 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	if err != nil {
 		return err
 	}
-	request.Status.Image = image
+
+	fmt.Println("LM Image Status", request.Status.Image)
+	fmt.Println("LM Image Spec", request.Spec.Image)
+	request.Status.Image = request.Spec.Image
+	fmt.Println("LM Image Status 2", request.Status.Image)
 	request.Status.Phase = "Ready"
+	fmt.Println("LM Upgrade Done!")
 
 	return nil
 }
@@ -163,6 +168,7 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	}
 	request.Status.Image = image
 	request.Status.Phase = "Ready"
+	fmt.Println("CM Upgrade Done!")
 
 	return nil
 }
@@ -213,6 +219,12 @@ func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectM
 }
 
 func upgradeScenarioForLicenseManager(ctx context.Context, c client.Client, request *enterprisev1.LicenseManager) bool {
+	fmt.Println("LM Status Image in LM", request.Status.Image)
+	fmt.Println("LM Spec Image in LM", request.Spec.Image)
+	if request.Spec.Image != request.Status.Image {
+		request.Status.Phase = "Pending"
+		return true
+	}
 	return false
 }
 
@@ -233,6 +245,12 @@ func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, requ
 		reqLogger.Error(err, "unable to find license manager", "name", licenseManagerRef.Name, "namespace", licenseManagerRef.Namespace)
 		return false
 	}
+	fmt.Println("CM Status Image in CM", request.Status.Image)
+	fmt.Println("CM Spec Image in CM", request.Spec.Image)
+	fmt.Println("LM Status Image in CM", licenseManager.Status.Image)
+	fmt.Println("LM spec Image in CM", licenseManager.Spec.Image)
+	fmt.Println("LM Status Phase in CM", licenseManager.Status.Phase)
+
 	if request.Status.Image != request.Spec.Image && licenseManager.Status.Image == request.Spec.Image && licenseManager.Status.Phase == "Ready" {
 		// update possible
 		fmt.Println("1")

@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	enterprisev1 "github.com/vivekrsplunk/splunk-upgrade-poc/api/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -81,7 +82,10 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 	// check if LicenseManager has completed Upgrade
 	// update ClusterManager and also add Ownership Reference
 	if upgradeScenarioForClusterManager(ctx, r.Client, instance) {
-		updateCMStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
+		err = updateCMStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
+		if err != nil {
+			fmt.Println("CM Controller error", err)
+		}
 	}
 
 	return ctrl.Result{}, nil

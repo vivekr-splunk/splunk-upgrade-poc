@@ -74,6 +74,10 @@ spec:
 */
 func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.LicenseManager) error {
 	replicas := int32(3)
+	matchlabels := map[string]string{
+		"app":  request.Name,
+		"tier": "splunk",
+	}
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
 	statefulSet := appsv1.StatefulSet{}
@@ -83,15 +87,24 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		statefulSet.Name = name
 		statefulSet.Namespace = meta.GetNamespace()
 		statefulSet.Spec.Replicas = &replicas
-		statefulSet.Spec.Template.Spec.Containers = []corev1.Container{
-			{
-				Name:  "nginx",
-				Image: image,
-				Ports: []corev1.ContainerPort{
-					{
-						ContainerPort: 80,
-						Name:          "web",
+		statefulSet.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: matchlabels,
+		}
+		statefulSet.Spec.Template = corev1.PodTemplateSpec{
+			ObjectMeta: metav1.ObjectMeta{
+				Labels: matchlabels,
+			},
+			Spec: corev1.PodSpec{
+				Containers: []corev1.Container{{
+					Image: image,
+					Name:  "nginx",
+					Ports: []corev1.ContainerPort{
+						{
+							ContainerPort: 80,
+							Name:          "web",
+						},
 					},
+				},
 				},
 			},
 		}
@@ -126,6 +139,10 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 }
 func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.ClusterManager) error {
 	replicas := int32(3)
+	matchlabels := map[string]string{
+		"app":  request.Name,
+		"tier": "splunk",
+	}
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
 	statefulSet := appsv1.StatefulSet{}
@@ -135,15 +152,24 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		statefulSet.Name = name
 		statefulSet.Namespace = meta.GetNamespace()
 		statefulSet.Spec.Replicas = &replicas
-		statefulSet.Spec.Template.Spec.Containers = []corev1.Container{
-			{
-				Name:  "nginx",
-				Image: image,
-				Ports: []corev1.ContainerPort{
-					{
-						ContainerPort: 80,
-						Name:          "web",
+		statefulSet.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: matchlabels,
+		}
+		statefulSet.Spec.Template = corev1.PodTemplateSpec{
+			ObjectMeta: metav1.ObjectMeta{
+				Labels: matchlabels,
+			},
+			Spec: corev1.PodSpec{
+				Containers: []corev1.Container{{
+					Image: image,
+					Name:  "nginx",
+					Ports: []corev1.ContainerPort{
+						{
+							ContainerPort: 80,
+							Name:          "web",
+						},
 					},
+				},
 				},
 			},
 		}
@@ -174,6 +200,10 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 }
 func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string) error {
 	replicas := int32(3)
+	matchlabels := map[string]string{
+		"app":  meta.GetName(),
+		"tier": "splunk",
+	}
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
 	statefulSet := appsv1.StatefulSet{}
@@ -183,15 +213,24 @@ func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectM
 		statefulSet.Name = name
 		statefulSet.Namespace = meta.GetNamespace()
 		statefulSet.Spec.Replicas = &replicas
-		statefulSet.Spec.Template.Spec.Containers = []corev1.Container{
-			{
-				Name:  "nginx",
-				Image: image,
-				Ports: []corev1.ContainerPort{
-					{
-						ContainerPort: 80,
-						Name:          "web",
+		statefulSet.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: matchlabels,
+		}
+		statefulSet.Spec.Template = corev1.PodTemplateSpec{
+			ObjectMeta: metav1.ObjectMeta{
+				Labels: matchlabels,
+			},
+			Spec: corev1.PodSpec{
+				Containers: []corev1.Container{{
+					Image: image,
+					Name:  "nginx",
+					Ports: []corev1.ContainerPort{
+						{
+							ContainerPort: 80,
+							Name:          "web",
+						},
 					},
+				},
 				},
 			},
 		}

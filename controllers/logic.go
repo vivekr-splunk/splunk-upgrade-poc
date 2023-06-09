@@ -72,6 +72,15 @@ spec:
 	      requests:
 	        storage: 1Gi
 */
+
+func changeAnnotation(ctx context.Context, c client.Client, meta metav1.ObjectMeta) error {
+
+	cm := &enterprisev1.ClusterManager{}
+	cm.ObjectMeta.Annotations["test"] = "b"
+
+	return nil
+
+}
 func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.LicenseManager) error {
 	replicas := int32(3)
 	matchlabels := map[string]string{
@@ -126,6 +135,11 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		fmt.Println("LM Image Status", request.Status.Image)
 		fmt.Println("LM Image Spec", request.Spec.Image)
 
+		// err := changeAnnotation(ctx, c, meta)
+		// if err != nil {
+		// 	return err
+		// }
+
 		return nil
 
 	}
@@ -150,8 +164,12 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	request.Status.Phase = "Ready"
 	fmt.Println("LM Image Status 2", request.Status.Image)
 	fmt.Println("LM Image Status 2", request.Status.Phase)
-	c.Status().Update(context.Background(), request)
 	fmt.Println("LM Upgrade Done!")
+	err = changeAnnotation(ctx, c, meta)
+	if err != nil {
+		return err
+	}
+	c.Status().Update(context.Background(), request)
 
 	return nil
 }
@@ -160,6 +178,9 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	matchlabels := map[string]string{
 		"app":  request.Name,
 		"tier": "splunk",
+	}
+	annotations := map[string]string{
+		"test": "a",
 	}
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
@@ -175,7 +196,8 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		}
 		statefulSet.Spec.Template = corev1.PodTemplateSpec{
 			ObjectMeta: metav1.ObjectMeta{
-				Labels: matchlabels,
+				Labels:      matchlabels,
+				Annotations: annotations,
 			},
 			Spec: corev1.PodSpec{
 				Containers: []corev1.Container{{
@@ -206,6 +228,8 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 
 	}
 	// else update the statefulset image
+	fmt.Println("CM Image Status", request.Status.Image)
+	fmt.Println("CM Image Spec", request.Spec.Image)
 	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
 		request.Status.Image = request.Spec.Image
 		request.Status.Phase = "Ready"

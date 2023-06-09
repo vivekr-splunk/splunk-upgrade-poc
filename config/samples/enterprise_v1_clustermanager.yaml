@@ -8,6 +8,8 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: splunk-upgrade-poc
   name: clustermanager-sample
+  annotations:
+    test: a
 spec:
   image: registry.k8s.io/nginx-slim:0.8
   licenseManagerRef:

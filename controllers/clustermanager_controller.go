@@ -27,6 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
@@ -97,6 +98,9 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 func (r *ClusterManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&enterprisev1.ClusterManager{}).
+		WithEventFilter(predicate.Or(
+			predicate.AnnotationChangedPredicate{},
+		)).
 		Watches(&source.Kind{Type: &enterprisev1.LicenseManager{}},
 			&handler.EnqueueRequestForOwner{
 				IsController: false,

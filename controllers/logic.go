@@ -110,15 +110,23 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		}
 		statefulSet.OwnerReferences = []metav1.OwnerReference{
 			{
-				Name: request.Name,
-				Kind: request.Kind,
-				UID:  request.UID,
+				Name:       request.Name,
+				Kind:       request.Kind,
+				UID:        request.UID,
+				APIVersion: request.APIVersion,
 			},
 		}
 		err = c.Create(ctx, &statefulSet)
 		if err != nil {
 			return err
 		}
+		request.Status.Image = request.Spec.Image
+		request.Status.Phase = "Ready"
+		c.Status().Update(context.Background(), request)
+		fmt.Println("LM Image Status", request.Status.Image)
+		fmt.Println("LM Image Spec", request.Spec.Image)
+
+		return nil
 
 	}
 
@@ -126,9 +134,6 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	fmt.Println("LM Image Spec", request.Spec.Image)
 	// else update the statefulset image
 	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
-		request.Status.Image = request.Spec.Image
-		request.Status.Phase = "Ready"
-		c.Status().Update(context.Background(), request)
 		return fmt.Errorf("image tag is same")
 	}
 	if statefulSet.Status.AvailableReplicas != 3 {
@@ -188,9 +193,10 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		}
 		statefulSet.OwnerReferences = []metav1.OwnerReference{
 			{
-				Name: request.Name,
-				Kind: request.Kind,
-				UID:  request.UID,
+				Name:       request.Name,
+				Kind:       request.Kind,
+				UID:        request.UID,
+				APIVersion: request.APIVersion,
 			},
 		}
 		err = c.Create(ctx, &statefulSet)

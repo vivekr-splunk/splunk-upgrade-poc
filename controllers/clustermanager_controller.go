@@ -25,7 +25,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // ClusterManagerReconciler reconciles a ClusterManager object
@@ -95,5 +97,10 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 func (r *ClusterManagerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&enterprisev1.ClusterManager{}).
+		Watches(&source.Kind{Type: &enterprisev1.LicenseManager{}},
+			&handler.EnqueueRequestForOwner{
+				IsController: false,
+				OwnerType:    &enterprisev1.ClusterManager{},
+			}).
 		Complete(r)
 }

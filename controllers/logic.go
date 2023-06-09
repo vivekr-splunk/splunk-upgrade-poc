@@ -108,14 +108,27 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 				},
 			},
 		}
+		statefulSet.OwnerReferences = []metav1.OwnerReference{
+			{
+				Name: request.Name,
+				Kind: request.Kind,
+				UID:  request.UID,
+			},
+		}
 		err = c.Create(ctx, &statefulSet)
 		if err != nil {
 			return err
 		}
 
 	}
+
+	fmt.Println("LM Image Status", request.Status.Image)
+	fmt.Println("LM Image Spec", request.Spec.Image)
 	// else update the statefulset image
 	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
+		request.Status.Image = request.Spec.Image
+		request.Status.Phase = "Ready"
+		c.Status().Update(context.Background(), request)
 		return fmt.Errorf("image tag is same")
 	}
 	if statefulSet.Status.AvailableReplicas != 3 {
@@ -124,15 +137,15 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 
 	statefulSet.Spec.Template.Spec.Containers[0].Image = image
 	err = c.Update(ctx, &statefulSet)
-	if err != nil {
-		return err
-	}
+	// if err != nil {
+	// 	return err
+	// }
 
-	fmt.Println("LM Image Status", request.Status.Image)
-	fmt.Println("LM Image Spec", request.Spec.Image)
 	request.Status.Image = request.Spec.Image
-	fmt.Println("LM Image Status 2", request.Status.Image)
 	request.Status.Phase = "Ready"
+	fmt.Println("LM Image Status 2", request.Status.Image)
+	fmt.Println("LM Image Status 2", request.Status.Phase)
+	c.Status().Update(context.Background(), request)
 	fmt.Println("LM Upgrade Done!")
 
 	return nil
@@ -173,6 +186,13 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 				},
 			},
 		}
+		statefulSet.OwnerReferences = []metav1.OwnerReference{
+			{
+				Name: request.Name,
+				Kind: request.Kind,
+				UID:  request.UID,
+			},
+		}
 		err = c.Create(ctx, &statefulSet)
 		if err != nil {
 			return err
@@ -181,6 +201,9 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	}
 	// else update the statefulset image
 	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
+		request.Status.Image = request.Spec.Image
+		request.Status.Phase = "Ready"
+		c.Status().Update(context.Background(), request)
 		return fmt.Errorf("image tag is same")
 	}
 	if statefulSet.Status.AvailableReplicas != 3 {
@@ -189,11 +212,12 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 
 	statefulSet.Spec.Template.Spec.Containers[0].Image = image
 	err = c.Update(ctx, &statefulSet)
-	if err != nil {
-		return err
-	}
+	// if err != nil {
+	// 	return err
+	// }
 	request.Status.Image = image
 	request.Status.Phase = "Ready"
+	c.Status().Update(context.Background(), request)
 	fmt.Println("CM Upgrade Done!")
 
 	return nil

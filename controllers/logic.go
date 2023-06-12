@@ -75,9 +75,26 @@ spec:
 
 func changeAnnotation(ctx context.Context, c client.Client, meta metav1.ObjectMeta) error {
 
-	cm := &enterprisev1.ClusterManager{}
-	cm.ObjectMeta.Annotations["test"] = "b"
+	cmNamespace := "splunk-upgrade-poc-system"
+	cmName := "clustermanager-sample"
 
+	instance := &enterprisev1.ClusterManager{}
+	err := c.Get(ctx, client.ObjectKey{Namespace: cmNamespace, Name: cmName}, instance)
+	if err != nil {
+		fmt.Println("Error in Change Annotation GET", err)
+	}
+	annotations := instance.GetAnnotations()
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
+	if _, ok := annotations["test"]; ok {
+		annotations["test"] = "b"
+	}
+	instance.SetAnnotations(annotations)
+	err = c.Update(ctx, instance)
+	if err != nil {
+		fmt.Println("Error in Change Annotation UPDATE", err)
+	}
 	return nil
 
 }
@@ -132,20 +149,20 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		request.Status.Image = request.Spec.Image
 		request.Status.Phase = "Ready"
 		c.Status().Update(context.Background(), request)
-		fmt.Println("LM Image Status", request.Status.Image)
-		fmt.Println("LM Image Spec", request.Spec.Image)
+		fmt.Println("LM Image Status Create", request.Status.Image)
+		fmt.Println("LM Image Spec Create", request.Spec.Image)
 
-		// err := changeAnnotation(ctx, c, meta)
-		// if err != nil {
-		// 	return err
-		// }
+		err := changeAnnotation(ctx, c, meta)
+		if err != nil {
+			return err
+		}
 
 		return nil
 
 	}
 
-	fmt.Println("LM Image Status", request.Status.Image)
-	fmt.Println("LM Image Spec", request.Spec.Image)
+	fmt.Println("LM Image Status Before Upgrade", request.Status.Image)
+	fmt.Println("LM Image Spec Before Upgrade", request.Spec.Image)
 	// else update the statefulset image
 	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
 		return fmt.Errorf("image tag is same")
@@ -165,11 +182,12 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	fmt.Println("LM Image Status 2", request.Status.Image)
 	fmt.Println("LM Image Status 2", request.Status.Phase)
 	fmt.Println("LM Upgrade Done!")
+	c.Status().Update(context.Background(), request)
+
 	err = changeAnnotation(ctx, c, meta)
 	if err != nil {
 		return err
 	}
-	c.Status().Update(context.Background(), request)
 
 	return nil
 }
@@ -225,15 +243,17 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		if err != nil {
 			return err
 		}
-
-	}
-	// else update the statefulset image
-	fmt.Println("CM Image Status", request.Status.Image)
-	fmt.Println("CM Image Spec", request.Spec.Image)
-	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
 		request.Status.Image = request.Spec.Image
 		request.Status.Phase = "Ready"
 		c.Status().Update(context.Background(), request)
+		fmt.Println("CM Image Status Create", request.Status.Image)
+		fmt.Println("CM Image Spec Create", request.Spec.Image)
+
+	}
+	// else update the statefulset image
+	fmt.Println("CM Image Status Before Upgrade", request.Status.Image)
+	fmt.Println("CM Image Spec Before Upgrade", request.Spec.Image)
+	if statefulSet.Spec.Template.Spec.Containers[0].Image == image {
 		return fmt.Errorf("image tag is same")
 	}
 	if statefulSet.Status.AvailableReplicas != 3 {
@@ -245,10 +265,13 @@ func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 	// if err != nil {
 	// 	return err
 	// }
-	request.Status.Image = image
+
+	request.Status.Image = request.Spec.Image
 	request.Status.Phase = "Ready"
-	c.Status().Update(context.Background(), request)
+	fmt.Println("CM Image Status 2", request.Status.Image)
+	fmt.Println("CM Image Status 2", request.Status.Phase)
 	fmt.Println("CM Upgrade Done!")
+	c.Status().Update(context.Background(), request)
 
 	return nil
 }

@@ -98,12 +98,13 @@ func changeAnnotation(ctx context.Context, c client.Client, meta metav1.ObjectMe
 	return nil
 
 }
-func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.LicenseManager) error {
+func (r *LicenseManagerReconciler) updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, instance interface{}) error {
 	replicas := int32(3)
 	matchlabels := map[string]string{
-		"app":  request.Name,
+		"app":  meta.GetName(),
 		"tier": "splunk",
 	}
+	request := instance.(*enterprisev1.LicenseManager)
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
 	statefulSet := appsv1.StatefulSet{}
@@ -152,11 +153,6 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 		fmt.Println("LM Image Status Create", request.Status.Image)
 		fmt.Println("LM Image Spec Create", request.Spec.Image)
 
-		err := changeAnnotation(ctx, c, meta)
-		if err != nil {
-			return err
-		}
-
 		return nil
 
 	}
@@ -191,15 +187,16 @@ func updateLMStatefulSet(ctx context.Context, c client.Client, meta metav1.Objec
 
 	return nil
 }
-func updateCMStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, request *enterprisev1.ClusterManager) error {
+func (r *ClusterManagerReconciler) updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectMeta, image string, instance interface{}) error {
 	replicas := int32(3)
 	matchlabels := map[string]string{
-		"app":  request.Name,
+		"app":  meta.GetName(), //changed from request.name
 		"tier": "splunk",
 	}
 	annotations := map[string]string{
 		"test": "a",
 	}
+	request := instance.(*enterprisev1.ClusterManager)
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
 	statefulSet := appsv1.StatefulSet{}
@@ -334,19 +331,14 @@ func updateStatefulSet(ctx context.Context, c client.Client, meta metav1.ObjectM
 	return nil
 }
 
-func upgradeScenarioForLicenseManager(ctx context.Context, c client.Client, request *enterprisev1.LicenseManager) bool {
-	fmt.Println("LM Status Image in LM", request.Status.Image)
-	fmt.Println("LM Spec Image in LM", request.Spec.Image)
-	if request.Spec.Image != request.Status.Image {
-		request.Status.Phase = "Pending"
-		return true
-	}
+func (r *LicenseManagerReconciler) upgradeScenario(ctx context.Context, c client.Client, instance interface{}) bool {
 	return false
 }
 
-func upgradeScenarioForClusterManager(ctx context.Context, c client.Client, request *enterprisev1.ClusterManager) bool {
+func (r *ClusterManagerReconciler) upgradeScenario(ctx context.Context, c client.Client, instance interface{}) bool {
 
 	reqLogger := log.FromContext(ctx)
+	request := instance.(*enterprisev1.ClusterManager)
 	// read license manager reference
 
 	licenseManagerRef := request.Spec.LicenseManagerRef

@@ -62,6 +62,7 @@ type LicenseManagerReconciler struct {
 func (r *LicenseManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	reqLogger := log.FromContext(ctx)
 	reqLogger = reqLogger.WithValues("licensemanager", req.NamespacedName)
+	var cr Upgrade
 
 	// Fetch the ClusterManager
 	instance := &enterprisev1.LicenseManager{}
@@ -76,8 +77,9 @@ func (r *LicenseManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
+	cr = r
 	if len(instance.Spec.Image) > 3 {
-		err = updateLMStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
+		err = cr.updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
 		if err != nil {
 			fmt.Println("LM Controller error", err)
 		}

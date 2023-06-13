@@ -65,6 +65,7 @@ type ClusterManagerReconciler struct {
 func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	reqLogger := log.FromContext(ctx)
 	reqLogger = reqLogger.WithValues("clustermanager", req.NamespacedName)
+	var cr Upgrade
 
 	// Fetch the ClusterManager
 	instance := &enterprisev1.ClusterManager{}
@@ -79,13 +80,14 @@ func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
+	cr = r
 
 	// TODO(user): your logic here
 	// Upgrade Scenario ?
 	// check if LicenseManager has completed Upgrade
 	// update ClusterManager and also add Ownership Reference
-	if upgradeScenarioForClusterManager(ctx, r.Client, instance) {
-		err = updateCMStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
+	if cr.upgradeScenario(ctx, r.Client, instance) {
+		err = cr.updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
 		if err != nil {
 			fmt.Println("CM Controller error", err)
 		}

@@ -37,6 +37,8 @@ type IndexerClusterSpec struct {
 
 	// LicenseManagerRef refers to a Splunk Enterprise license manager that is used
 	LicenseManagerRef corev1.ObjectReference `json:"licenseManagerRef"`
+
+	Site int `json:"site"`
 }
 
 // IndexerClusterStatus defines the observed state of IndexerCluster

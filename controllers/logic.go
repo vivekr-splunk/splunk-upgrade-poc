@@ -246,6 +246,8 @@ func (r *ClusterManagerReconciler) updateStatefulSet(ctx context.Context, c clie
 		fmt.Println("CM Image Status Create", request.Status.Image)
 		fmt.Println("CM Image Spec Create", request.Spec.Image)
 
+		return nil
+
 	}
 	// else update the statefulset image
 	fmt.Println("CM Image Status Before Upgrade", request.Status.Image)
@@ -376,9 +378,9 @@ func upgradeScenarioForMonitoringConsole(ctx context.Context, c client.Client, r
 	return false
 }
 
-func upgradeScenarioForIndexerCluster(ctx context.Context, c client.Client, request *enterprisev1.IndexerCluster) bool {
-	return false
-}
+// func upgradeScenarioForIndexerCluster(ctx context.Context, c client.Client, request *enterprisev1.IndexerCluster) bool {
+// 	return false
+// }
 
 func upgradeScenarioForSearchHeadCluster(ctx context.Context, c client.Client, request *enterprisev1.SearchHeadCluster) bool {
 	return false

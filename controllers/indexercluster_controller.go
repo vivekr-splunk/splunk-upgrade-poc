@@ -61,6 +61,7 @@ type IndexerClusterReconciler struct {
 func (r *IndexerClusterReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	reqLogger := log.FromContext(ctx)
 	reqLogger = reqLogger.WithValues("IndexerCluster", req.NamespacedName)
+	var cr Upgrade
 
 	// Fetch the ClusterManager
 	instance := &enterprisev1.IndexerCluster{}
@@ -75,8 +76,9 @@ func (r *IndexerClusterReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 		}
 	}
 	reqLogger.Info("start", "CR version", instance.GetResourceVersion())
-	if upgradeScenarioForIndexerCluster(ctx, r.Client, instance) {
-		updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image)
+	cr = r
+	if cr.upgradeScenario(ctx, r.Client, instance) {
+		cr.updateStatefulSet(ctx, r.Client, instance.ObjectMeta, instance.Spec.Image, instance)
 	}
 	return ctrl.Result{}, nil
 }

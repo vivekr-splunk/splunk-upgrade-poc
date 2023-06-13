@@ -14,3 +14,4 @@ spec:
     name: clustermanager-sample
   licenseManagerRef:
     name: licensemanager-sample
+  site: 3

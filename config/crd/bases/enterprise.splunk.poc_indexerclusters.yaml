@@ -1480,6 +1480,8 @@ spec:
                         type: object
                     type: object
                 type: object
+              site:
+                type: integer
               tolerations:
                 description: Pod's tolerations for Kubernetes node's taint
                 items:
@@ -1692,6 +1694,7 @@ spec:
             - clusterManagerRef
             - image
             - licenseManagerRef
+            - site
             type: object
           status:
             description: IndexerClusterStatus defines the observed state of IndexerCluster

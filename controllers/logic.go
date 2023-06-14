@@ -74,6 +74,7 @@ spec:
 */
 
 func changeAnnotation(ctx context.Context, c client.Client, meta metav1.ObjectMeta) error {
+	// required to trigger the cluster manager reconciler if a change is pending
 
 	cmNamespace := "splunk-upgrade-poc-system"
 	cmName := "clustermanager-sample"
@@ -104,6 +105,7 @@ func (r *LicenseManagerReconciler) updateStatefulSet(ctx context.Context, c clie
 		"app":  meta.GetName(),
 		"tier": "splunk",
 	}
+	// obtain the instance
 	request := instance.(*enterprisev1.LicenseManager)
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
@@ -147,6 +149,7 @@ func (r *LicenseManagerReconciler) updateStatefulSet(ctx context.Context, c clie
 		if err != nil {
 			return err
 		}
+		// Update the Status Image
 		request.Status.Image = request.Spec.Image
 		request.Status.Phase = "Ready"
 		c.Status().Update(context.Background(), request)
@@ -196,6 +199,7 @@ func (r *ClusterManagerReconciler) updateStatefulSet(ctx context.Context, c clie
 	annotations := map[string]string{
 		"test": "a",
 	}
+	// obtain the instance
 	request := instance.(*enterprisev1.ClusterManager)
 	name := fmt.Sprintf("%s-%s", meta.GetName(), "st")
 	namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
@@ -240,6 +244,7 @@ func (r *ClusterManagerReconciler) updateStatefulSet(ctx context.Context, c clie
 		if err != nil {
 			return err
 		}
+		// Update the Status Image
 		request.Status.Image = request.Spec.Image
 		request.Status.Phase = "Ready"
 		c.Status().Update(context.Background(), request)
@@ -341,6 +346,7 @@ func (r *ClusterManagerReconciler) upgradeScenario(ctx context.Context, c client
 
 	reqLogger := log.FromContext(ctx)
 	request := instance.(*enterprisev1.ClusterManager)
+
 	// read license manager reference
 
 	licenseManagerRef := request.Spec.LicenseManagerRef

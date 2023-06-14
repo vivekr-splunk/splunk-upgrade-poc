@@ -24,8 +24,12 @@ func (r *IndexerClusterReconciler) updateStatefulSet(ctx context.Context, c clie
 		"test": "a",
 	}
 	request := instance.(*enterprisev1.IndexerCluster)
+
+	//Get the number of sites
 	site := request.Spec.Site
 	namePrefix := fmt.Sprintf("%s-%s", meta.GetName(), "st")
+
+	// Check for each site for multisite indexerclusters
 	for s := 1; s <= site; s++ {
 		name := fmt.Sprintf("%s-%s-%d", namePrefix, "site", s)
 		namespacedName := types.NamespacedName{Namespace: meta.GetNamespace(), Name: name}
@@ -71,6 +75,7 @@ func (r *IndexerClusterReconciler) updateStatefulSet(ctx context.Context, c clie
 			if err != nil {
 				return err
 			}
+			//Update Status Image
 			request.Status.Image = request.Spec.Image
 			request.Status.Phase = "Ready"
 			c.Status().Update(context.Background(), request)
@@ -110,7 +115,8 @@ func (r *IndexerClusterReconciler) upgradeScenario(ctx context.Context, c client
 
 	reqLogger := log.FromContext(ctx)
 	request := instance.(*enterprisev1.IndexerCluster)
-	// read license manager reference
+
+	// read cluster manager reference
 
 	clusterManagerRef := request.Spec.ClusterManagerRef
 	namespacedName := types.NamespacedName{Namespace: request.GetNamespace(), Name: clusterManagerRef.Name}

@@ -65,6 +65,8 @@ type ClusterManagerReconciler struct {
 func (r *ClusterManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	reqLogger := log.FromContext(ctx)
 	reqLogger = reqLogger.WithValues("clustermanager", req.NamespacedName)
+
+	//interface variable
 	var cr Upgrade
 
 	// Fetch the ClusterManager

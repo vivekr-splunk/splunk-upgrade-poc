@@ -62,6 +62,8 @@ type LicenseManagerReconciler struct {
 func (r *LicenseManagerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	reqLogger := log.FromContext(ctx)
 	reqLogger = reqLogger.WithValues("licensemanager", req.NamespacedName)
+
+	//interface variable
 	var cr Upgrade
 
 	// Fetch the ClusterManager
